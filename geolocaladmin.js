@@ -8,7 +8,7 @@
  */
 jQuery(document).ready(function($) {
 
-	$.fn.geolocalAdmin = function($ajaxUrl,$lat,$long){
+	$.fn.geolocalAdmin = function(){
 
 		var element = this;
 		/*THE CALL BACK => CALL GOOGLE API TO CREATE THE MAP
@@ -28,18 +28,23 @@ jQuery(document).ready(function($) {
 
 		/*LOAD THE GOOGLE API AND CHANGE THE VALUE OF THE FIELDS / CALLBACK WITH LAT/LONG VALUES
 		************************/
-		this.detect = function(){
+		this.detect = function($ajaxUrl){
 				if(navigator.geolocation) {						
-					if(!$(this).hasClass('blocked')){
+					if(!$(this).hasClass('blocked') && $('body').hasClass('widgets-php')){
 						navigator.geolocation.getCurrentPosition(function(position) {
 							var $currentLat = position.coords.latitude;
 							var $currentLong = position.coords.longitude;
+							element.ajaxSaved($ajaxUrl,$currentLat,$currentLong);
 							element.siblings('.lat').val($currentLat);
 							element.siblings('.long').val($currentLong);
 							element.createMap($currentLat, $currentLong,element[0]);
-							console.log('pk');
 						});	
-							
+					}else if($('body').hasClass('index-php')){
+						navigator.geolocation.getCurrentPosition(function(position) {
+							var $currentLat = position.coords.latitude;
+							var $currentLong = position.coords.longitude;
+							element.ajaxSaved($ajaxUrl,$currentLat,$currentLong);							
+						});		
 					}else{
 						this.createMap($(this).siblings('.lat').val(), $(this).siblings('.long').val(),$(this)[0]);	
 					}		
@@ -51,12 +56,7 @@ jQuery(document).ready(function($) {
 
 		/*AJAX SAVE FOR THE PANEL PAGE
 		************************/
-		this.ajaxSaved = function($ajaxUrl){
-			if(navigator.geolocation){
-				navigator.geolocation.getCurrentPosition(function(position) {
-					$currentLat = position.coords.latitude;
-					$currentLong = position.coords.longitude;
-					
+		this.ajaxSaved = function($ajaxUrl,$currentLat,$currentLong){					
 					var data = {
 						action: 'geolocaladmin_ajax_save',
 						lat : $currentLat,
@@ -66,13 +66,8 @@ jQuery(document).ready(function($) {
 						type : 'post',
 						url : $ajaxUrl,
 						data : data
-					}).done(function(data){
-						console.log(data);
-					});
-
-				});
-
-			}
+					})/*.done(function(data){
+					});*/
 			return this;
 		}
 		return this;

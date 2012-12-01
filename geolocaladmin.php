@@ -86,6 +86,7 @@ class GeolocalAdmin{
 			}
 		}
 		return $actives_widgets;
+		
 	}
 	/**
 	 * Function Usefull to check on page loading if one active widget have been blocked on current location
@@ -125,8 +126,10 @@ class GeolocalAdmin{
 	 * @since 0.1
 	 */
 	public function add_stylesheet($hook) {
+
 		if(!is_admin() || 'widgets.php'==$hook) 
 		wp_enqueue_style( 'geolocaladmin_admin', GEOLOCALADMIN_URI . 'geolocaladmin.css', false, 0.1, 'all' );
+
 	}
 
 	/**
@@ -135,7 +138,9 @@ class GeolocalAdmin{
 	* @since 0.1
 	*/
 	public function add_meta_viewport() {
+
 		echo '<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />';
+
 	}
 	/**
 	* Geolocalisation jQuery plugin by m@teo
@@ -144,19 +149,21 @@ class GeolocalAdmin{
 	*/
 
 	public function enqueue_scripts($hook){
+
 		if(!is_admin()){
 			wp_deregister_script( 'jquery' );
 		    wp_register_script( 'jquery', 'http://code.jquery.com/jquery-1.8.2.min.js');
 		    wp_enqueue_script( 'jquery' );
 		}
 
-	  if('widgets.php'!=$hook && is_admin() && 'index.php'!=$hook)
+	    if('widgets.php'!=$hook && is_admin() && 'index.php'!=$hook)
 			return;
 		wp_register_script( 'googleapigeolocal', 'http://maps.google.com/maps/api/js?sensor=true');
 		wp_register_script('geolocaladmin_admin_scripts', plugins_url('/geolocaladmin.js',__FILE__), array('jquery'));
 
 		wp_enqueue_script('googleapigeolocal');
 		wp_enqueue_script('geolocaladmin_admin_scripts');
+
 	}
 
 	/**
@@ -166,7 +173,9 @@ class GeolocalAdmin{
 	*
 	*/
 	public function widget_init (){
+
 		register_widget('geolocaladmin_widget');
+
 	}	
 
 	/**
@@ -206,6 +215,7 @@ class GeolocalAdmin{
 		}
 		update_option( "widget_".GEOLOCALADMIN_ID_BASE, $new_datas ); 
 		die();
+
 	}
 
 	/**
@@ -219,31 +229,26 @@ class GeolocalAdmin{
 		
 		if(!self::blocker_verif()) {
 		?>
-
-		<script type="text/javascript">
-			jQuery(document).ready(function($) {
-				var $ajaxUrl = '<?php echo admin_url('admin-ajax.php'); ?>';
-				
-				<?php if($this->currentAdminPage->parent_base == 'index'): ?>
-
-					$().geolocalAdmin().ajaxSaved($ajaxUrl)
-				
-				<?php else: ?>
-					$('#widgets-right .map_canvas').each(function(){
-						$(this).geolocalAdmin().detect();
-					});
-				<?php endif; ?>
-			});
-		</script>
-		<?php }else{ ?>
-
-		<script type="text/javascript">
-			jQuery(document).ready(function($) {
-				$('#widgets-right .map_canvas').each(function(){
-					$(this).geolocalAdmin().createMap($(this).siblings('#lat').val(), $(this).siblings('#long').val());	
+			<script type="text/javascript">
+				jQuery(document).ready(function($) {
+					var $ajaxUrl = '<?php echo admin_url('admin-ajax.php'); ?>';				
+					<?php if($this->currentAdminPage->parent_base == 'index'): ?>
+						$().geolocalAdmin().detect($ajaxUrl)				
+					<?php else: ?>
+						$('#widgets-right .map_canvas').each(function(){
+							$(this).geolocalAdmin().detect($ajaxUrl);
+						});
+					<?php endif; ?>
 				});
-			});
-		</script>
+			</script>
+		<?php }else{ ?>
+			<script type="text/javascript">
+				jQuery(document).ready(function($) {
+					$('#widgets-right .map_canvas').each(function(){
+						$(this).geolocalAdmin().createMap($(this).siblings('#lat').val(), $(this).siblings('#long').val());	
+					});
+				});
+			</script>
 		<?php 	}
 	}
 
@@ -253,6 +258,7 @@ class GeolocalAdmin{
 	 * @since 0.1
 	 */
 	public function ajax_save_script() {
+
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
@@ -260,12 +266,13 @@ class GeolocalAdmin{
 					var $ajaxUrl = '<?php echo admin_url('admin-ajax.php'); ?>';
 					if(settings.data.search('action=save-widget') != -1 && settings.data.search('id_base=<?php echo GEOLOCALADMIN_ID_BASE; ?>') != -1) {
 						$('#widgets-right .map_canvas').each(function(){
-								$(this).geolocalAdmin().detect();
+								$(this).geolocalAdmin().detect($ajaxUrl);
 						});
 					}
 				});
 			});
 		</script>
+
 	<?php }
 
 	/**
@@ -273,17 +280,19 @@ class GeolocalAdmin{
 	 *
 	 * @since 0.1
 	 */
-	public function print_scripts_front_side() {		
+	public function print_scripts_front_side() {
+
 		?>
-		<script type="text/javascript">
-			jQuery(document).ready(function($) {				
-				$('.geolocaladmin_widget #map_canvas').each(function(){
-					var $lat = $(this).siblings('input.lat').val(),
-					 	$long = $(this).siblings('input.long').val();
-						$(this).geolocalAdmin().createMap($lat,$long);
+			<script type="text/javascript">
+				jQuery(document).ready(function($) {				
+					$('.geolocaladmin_widget #map_canvas').each(function(){
+						var $lat = $(this).siblings('input.lat').val(),
+						 	$long = $(this).siblings('input.long').val();
+							$(this).geolocalAdmin().createMap($lat,$long);
+					});
 				});
-			});
-		</script>
-		<?php 	
+			</script>
+		<?php
+
 	}
 }
