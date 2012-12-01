@@ -1,8 +1,6 @@
 geolocaladmin
 =============
 
-A plugin for wordpress widget/plugin to show in the front end a google map of the last geolocalisation of a determined admin.
-You can use it for all selected users of your choice;
-You can choose to Show differents map for differents
+A wordpress plugin to detect any backend user GPS position and show them via a sidebar widget. The plugin detect on panel page and on widget page. It allows to track several users, and also block a position. Its a perfect tool for travveling blogs wich want to show theyre last connect position without copy/past a googlemap everytime...
 
-So util for travelling blogs!!
+On version 0.2 theyre will be more usefull widget setting, a plugin setting page (styles options, global options) and the abbility to show any widget active maps with shortcodes. 
